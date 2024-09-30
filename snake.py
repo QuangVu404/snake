@@ -1,3 +1,4 @@
+#hilo python
 import random
 import sys
 import pygame
