@@ -1,3 +1,4 @@
+#hilo python
 import random
 import sys
 import pygame
@@ -14,8 +15,11 @@ screen=pygame.display.set_mode((length, height))
 WHITE=(255, 255, 255)
 BLACK=(0, 0, 0)
 GREY=(130, 130, 130)
+B_GREY=(100, 100, 100)
 YELLOW=(255, 255, 0)
 GREEN=(0, 255, 0)
+BLUE=(0, 0, 200)
+RED=(200, 0, 0)
 
 x, y=60, 60
 dx, dy=0, 0
@@ -30,20 +34,12 @@ step=15
 
 clock=pygame.time.Clock()
 
+option=0
+
 score=0
 best_score=0
 
 snake_body=[(x, y)]
-
-def start(): #ham khoi tao game
-    global x, y, dx, dy, snake_len, score, snake_body
-    snake_len=15
-    x=random.randint(0, (length-snake_len)//step)*step
-    y=random.randint(0, (height-snake_len)//step)*step
-    dx, dy=0, 0
-    score=0
-
-    snake_body.clear()
 
 def show_game_over(): #ham ket thuc-tiep tuc neu game over
     #ve con ran va thuc an
@@ -83,8 +79,47 @@ def random_food(): #ham xuat hien thuc an
     food_x=random.randint(0, (length-food_size)//food_size)*food_size
     food_y=random.randint(0, (length-food_size)//food_size)*food_size
 
+def choose_mode():  # Function to choose mode
+    while True:
+        screen.fill(BLUE)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+        #thao tac lua chon
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_1]:
+            return 1  # Mode 1 selected
+        if keys[pygame.K_2]:
+            return 2  # Mode 2 selected
+
+        #Dua ra cac lua chon
+        font = pygame.font.SysFont(None, 35)
+        mode_1_text = font.render("Press 1: Wall Hit = Lose", True, BLACK)
+        mode_2_text = font.render("Press 2: Wall Wrap", True, BLACK)
+        screen.blit(mode_1_text, (length // 2 - 100, height // 2 - 20))
+        screen.blit(mode_2_text, (length // 2 - 100, height // 2 + 20))
+
+        pygame.display.update()
+
+def start(): #ham khoi tao game
+    global x, y, dx, dy, snake_len, score, snake_body, option
+
+    option=choose_mode()
+
+    snake_len=15
+    x=random.randint(0, (length-snake_len)//step)*step
+    y=random.randint(0, (height-snake_len)//step)*step
+    dx, dy=0, 0
+    score=0
+
+    snake_body.clear()
+
 def game_loop_main(): #ham main cua game
-    global x, y, dx, dy, quit_game, score, best_score, snake_body, speed
+    global x, y, dx, dy, quit_game, score, best_score, snake_body, speed, option
+
     start()
     random_food()
 
@@ -117,8 +152,18 @@ def game_loop_main(): #ham main cua game
         y+=dy
 
         #neu dam vao tuong hoac vao than - ban thua
-        if x<0 or x>length-15 or y<0 or y>height-15 or (x, y) in snake_body[:-1]:
-            game_over=True
+        if option==1:
+            if x<0 or x>length-15 or y<0 or y>height-15 or (x, y) in snake_body[:-1]:
+                game_over=True
+
+        if option==2:
+            if (x, y) in snake_body[:-1]:
+                game_over=True
+
+            if x<0: x=length-15
+            if x>length-15: x=0
+            if y<0: y=height-15
+            if y>height-15: y=0
 
         if game_over:
             show_game_over()
@@ -140,7 +185,8 @@ def game_loop_main(): #ham main cua game
 
         #so diem ban dang co
         font=pygame.font.SysFont(None, 25)
-        text=font.render(str(score), True, YELLOW)
+        if option==2: text=font.render(str(score), True, YELLOW)
+        if option==1: text=font.render(str(score), True, RED)
         screen.blit(text, (length//2, 40))
 
         #ve ran va thuc an
