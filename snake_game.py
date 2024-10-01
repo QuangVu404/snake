@@ -18,6 +18,7 @@ GREY=(130, 130, 130)
 B_GREY=(100, 100, 100)
 YELLOW=(255, 255, 0)
 GREEN=(0, 255, 0)
+B_GREEN=(0, 50, 0)
 BLUE=(0, 0, 255)
 RED=(200, 0, 0)
 
@@ -46,20 +47,21 @@ def show_game_over(): #ham ket thuc-tiep tuc neu game over
 
     #ve con ran va thuc an
     pygame.draw.rect(screen, WHITE, (food_x, food_y, food_size, food_size))
-    for part in snake_body:
+    pygame.draw.rect(screen, B_GREEN, (snake_body[-1][0], snake_body[-1][1], snake_len, 15))
+    for part in snake_body[0:-1]:
         pygame.draw.rect(screen, GREEN, (*part, snake_len, 15))
 
     font=pygame.font.SysFont(None, 30)
     text=font.render('Game Over!', True, BLACK)
     font=pygame.font.SysFont(None, 28)
-    text_choice=font.render(' Press "C" to Play Again, "ESC" to Quit or "Q" to choose mode', True, BLACK)
+    text_choice=font.render(' Press "C" to Play Again, "ESC" to Quit or "H" to home', True, BLACK)
     font=pygame.font.SysFont(None, 50)
     point=font.render("YOUR SCORE: "+str(score), True, BLACK)
     font=pygame.font.SysFont(None, 35)
     best_point=font.render("(best score: "+str(best_score)+')', True, BLACK)
 
     screen.blit(text, (240, height//2-70))
-    screen.blit(text_choice, (8, height//2-35))
+    screen.blit(text_choice, (35, height//2-35))
     screen.blit(point, (145, height//2+25))
     screen.blit(best_point, (180, height//2+65))
 
@@ -78,7 +80,7 @@ def show_game_over(): #ham ket thuc-tiep tuc neu game over
             sys.exit()
         if keys[pygame.K_c]:
             return
-        if keys[pygame.K_q]:
+        if keys[pygame.K_h]:
             option=choose_mode()
             return
 
@@ -133,14 +135,6 @@ def start(): #ham khoi tao game
 def pause_game():
     global snake_body, food_x, food_y, option
     while True:
-        screen.fill(GREY)
-
-        if option==1:
-            pygame.draw.line(screen, RED, (0, 0), (0, 599), 1)
-            pygame.draw.line(screen, RED, (0, 599), (599, 599), 1)
-            pygame.draw.line(screen, RED, (0, 0), (599, 0), 2)
-            pygame.draw.line(screen, RED, (599, 0), (599, 599), 1)
-
         for event in pygame.event.get():
             if event.type==pygame.QUIT:
                 pygame.quit()
@@ -149,7 +143,7 @@ def pause_game():
         keys=pygame.key.get_pressed()
         if keys[pygame.K_c]:
             return
-        if keys[pygame.K_q]:
+        if keys[pygame.K_ESCAPE]:
             pygame.quit()
             sys.exit()
 
@@ -160,7 +154,7 @@ def pause_game():
         font=pygame.font.SysFont(None, 100)
         text_pause=font.render("PAUSED", True, BLACK)
         font=pygame.font.SysFont(None, 35)
-        text_option=font.render('Press "C" to continue or "Q" to quit game', True, BLACK)
+        text_option=font.render('Press "C" to continue or "ESC" to quit game', True, BLACK)
 
         screen.blit(text_pause, (length//2-140, height//2-25))
         screen.blit(text_option, (length//2-240, height//2+35))
@@ -253,7 +247,8 @@ def game_loop_main(): #ham main cua game
 
         #ve ran va thuc an
         pygame.draw.rect(screen, WHITE, (food_x, food_y, food_size, food_size))
-        for part in snake_body:
+        pygame.draw.rect(screen, B_GREEN, (snake_body[-1][0], snake_body[-1][1], snake_len, 15))
+        for part in snake_body[0:-1]:
             pygame.draw.rect(screen, GREEN, (*part, snake_len, 15))
 
         #tang toc moi 15 diem
